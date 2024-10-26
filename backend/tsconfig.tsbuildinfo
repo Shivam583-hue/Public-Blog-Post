@@ -1,1 +1,1 @@
-{"root":["./src/db.ts","./src/env.d.ts","./src/index.ts","./src/controllers/auth.controller.ts","./src/mailtrap/emailtemplates.ts","./src/mailtrap/emails.ts","./src/mailtrap/mailtrap.config.ts","./src/middleware/verifiytoken.ts","./src/routes/auth.route.ts"],"version":"5.6.3"}
+{"root":["./src/env.d.ts","./src/index.ts","./src/controllers/auth.controller.ts","./src/mailtrap/emailtemplates.ts","./src/mailtrap/emails.ts","./src/mailtrap/mailtrap.config.ts","./src/middleware/verifiytoken.ts","./src/routes/auth.route.ts"],"version":"5.6.3"}

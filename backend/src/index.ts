@@ -1,8 +1,9 @@
 import express from "express";
-import UserModel from "./db";
+import { PrismaClient } from "@prisma/client";
 import cors from "cors";
 import router from "./routes/auth.route";
 import cookieParser from 'cookie-parser'
+const prisma = new PrismaClient();
 
 const app = express();
 
