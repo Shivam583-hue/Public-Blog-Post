@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import React,{ useState, useEffect, useCallback } from "react";
+import React,{ useState, useEffect,  } from "react";
 import axios from "axios";
 import { useAuthStore } from "../Store/authStore";
 import { useNavigate } from "react-router-dom";
@@ -41,30 +41,7 @@ interface BlogCardProps {
 }
 
 
-class ErrorBoundary extends React.Component<
-  { children: React.ReactNode },
-  { hasError: boolean }
-> {
-  constructor(props: { children: React.ReactNode }) {
-    super(props);
-    this.state = { hasError: false };
-  }
 
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="p-4 text-red-500 text-center">
-          Something went wrong. Please refresh the page.
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
 
 const BlogCard = React.memo(({ blog, onLikeUpdate }: BlogCardProps) => {
   const navigate = useNavigate();

@@ -1,9 +1,12 @@
 {
   "name": "authenticationfromytvid",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "backend/dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "NODE_ENV=development nodemon backend/dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "set NODE_ENV=production node backend/dist/index.js",
+    "build": "npm install && tsc -b backend && npm install --prefix frontend && npm run build --prefix frontend"
   },
   "keywords": [],
   "author": "",

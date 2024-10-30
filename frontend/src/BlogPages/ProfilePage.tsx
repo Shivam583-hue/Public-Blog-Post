@@ -51,7 +51,7 @@ interface ProfileProps {
 
 const BlogCard = React.memo(({ blog,onDelete }: BlogCardProps) => {
   const navigate = useNavigate();
-  const [likeCount, setLikeCount] = useState(blog._count.likes);
+  const likeCount = blog._count.likes;
   const { user } = useAuthStore();
 
   const handleReadMore = () => {
@@ -76,9 +76,7 @@ const BlogCard = React.memo(({ blog,onDelete }: BlogCardProps) => {
   }
 
   
-  const showErrorToast = (message: string) => {
-    alert(message);
-  };
+  
 
   return (
     <motion.div initial={{ opacity: 1 }}

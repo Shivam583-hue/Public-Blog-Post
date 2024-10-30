@@ -9,6 +9,7 @@ const prisma = new PrismaClient();
 
 const app = express();
 
+
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
@@ -18,6 +19,7 @@ app.use(cors({
 
 app.use('/api/auth',router)
 app.use('/blog',blog_router)
+
 
 //Getting the Preview Cards 
 app.get('/home', async (req, res) => {
@@ -109,6 +111,7 @@ app.get('/home/:blog_id', (async (req, res) => {
     });
   }
 })as express.RequestHandler);
+
 
 
 //Getting all the blogs belonging to one user
@@ -274,7 +277,7 @@ app.get('/:userId/bookmarks', (async (req: Request, res: Response) => {
           return res.status(404).json({ success: false, message: "No bookmarked blogs found for this user." });
       }
 
-      const blogs = bookmarkedBlogs.map((bookmark) => bookmark.blog);
+      const blogs = bookmarkedBlogs.map((bookmark:any) => bookmark.blog);
 
       res.status(200).json({ success: true, data: blogs });
   } catch (error) {
@@ -562,7 +565,7 @@ app.get('/users/:userId/followers', (async (req: Request, res: Response) => {
           },
       });
 
-      const followersList = followers.map(follow => ({
+      const followersList = followers.map((follow:any) => ({
           id: follow.follower.id,
           username: follow.follower.username,
           email: follow.follower.email,
@@ -606,7 +609,7 @@ app.get('/users/:userId/following', (async (req: Request, res: Response) => {
           },
       });
 
-      const followingList = following.map(follow => ({
+      const followingList = following.map((follow:any) => ({
           id: follow.followed.id,
           username: follow.followed.username,
           email: follow.followed.email,
