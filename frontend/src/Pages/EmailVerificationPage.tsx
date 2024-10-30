@@ -60,17 +60,17 @@ const EmailVerificationPage = () => {
   }, [code]);
 
   return (
-    <div className="max-w-md w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden">
+    <div className="max-w-md w-full mt-28 h-full sm:ml-[35%] sm:mt-[10%] bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden">
       <motion.div
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
         className="bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-2xl p-8 w-full max-w-md"
       >
-        <h2 className="text-3xl font-bold font-mono mb-6 text-center text-[#99d6ea] bg-clip-text">
+        <h2 className="text-3xl font-bold font-mono mb-6 text-center text-gray-400 bg-clip-text">
           Verify Your Email
         </h2>
-        <p className="text-center text-gray-300 mb-6">
+        <p className="text-center text-gray-100 mb-6">
           Enter the 6-digit code sent to your email address.
         </p>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -84,7 +84,7 @@ const EmailVerificationPage = () => {
                 value={digit}
                 onChange={(e) => handleChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
-                className="w-12 h-12 text-center text-2xl font-bold font-mono bg-gray-700 text-[#99d6ea] border-gray-700 rounded-lg focus:border-[#99d6ea] focus:outline-none"
+                className="w-12 h-12 text-center text-2xl font-bold font-mono bg-gray-700 text-gray-400 border-gray-700 rounded-lg focus:border-[#99d6ea] focus:outline-none"
               />
             ))}
           </div>
@@ -94,7 +94,7 @@ const EmailVerificationPage = () => {
               whileTap={{ scale: 0.95 }} 
               type="submit" 
               disabled={isLoading || code.some((digit) => !digit)} 
-              className="w-full bg-[#99d6ea] text-[#1b1d36] font-extrabold font-mono py-3 px-4 rounded-lg shadow-lg text-xl hover:bg-[#77d3f1] focus:outline-none focus:ring-2 focus:ring-[#99d6ea] cursor-pointer"
+              className="w-full bg-gray-400 text-[#1b1d36] font-extrabold font-mono py-3 px-4 rounded-lg shadow-lg text-xl hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-[#99d6ea] cursor-pointer"
           >
               {isLoading ? "Verifying..." : "Verify Email"}
           </motion.button>

@@ -1,12 +1,13 @@
 import {PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE} from "./emailTemplates"
-import { mailtrapClient, sender } from "./mailtrap.config"
+import { sender } from "./mailtrap.config"
+import sgMail from '@sendgrid/mail';
 
 
 export const sendVerificationEmail = async  (email : string,verificationToken : string) => {
     const recipient = [{email}];
 
     try{
-        const response = await mailtrapClient.send({
+        const response = await sgMail.send({
             from: sender,
             to: recipient,
             subject: "Verifiy your Email",
@@ -17,28 +18,28 @@ export const sendVerificationEmail = async  (email : string,verificationToken : 
     }catch(e){console.log("Error",e)}
 }
 
-export const sendWelcomeEmail = async (email: any, username : any) => {
-    const recipient = [{email}];
+// export const sendWelcomeEmail = async (email: any, username : any) => {
+//     const recipient = [{email}];
 
-    try{
-        await mailtrapClient.send({
-            from : sender,
-            to : recipient,
-            template_uuid: "4bd70e73-64bd-4e84-a08d-920729ecc2bb",
-            template_variables: {
-                "company_info_name": "Kwisatz Haderach's Followers",
-                "name": username 
-              }
-        })
-        console.log("Welcome Email sent  ")
-    }catch(e){console.log("Error : " ,e)}
-}
+//     try{
+//         await sgMail.send({
+//             from : sender,
+//             to : recipient,
+//             template_uuid: "4bd70e73-64bd-4e84-a08d-920729ecc2bb",
+//             template_variables: {
+//                 "company_info_name": "Kwisatz Haderach's Followers",
+//                 "name": username 
+//               }
+//         })
+//         console.log("Welcome Email sent  ")
+//     }catch(e){console.log("Error : " ,e)}
+// }
 
 export const sendPasswordResetEmail = async(email:any,resetURL:any) =>{
     const recipient = [{email}];
 
     try{ 
-        const response = await mailtrapClient.send({
+        const response = await sgMail.send({
             from : sender,
             to : recipient,
             subject : "Reset your password",
@@ -50,7 +51,7 @@ export const sendPasswordResetEmail = async(email:any,resetURL:any) =>{
 export const sendResetSuccessEmail = async(email:any) => {
     const recipient = [{email}]
     try {
-        const response = await mailtrapClient.send({
+        const response = await sgMail.send({
             from : sender,
             to : recipient,
             subject : "Password Reset successfull",

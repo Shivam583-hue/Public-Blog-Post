@@ -4,5 +4,6 @@ declare namespace NodeJS {
       JWT_SECRET : string;
       MAILTRAP_TOKEN : string;
       MAILTRAP_ENDPOINT : string;
+      API_KEY: string;
     }
   }

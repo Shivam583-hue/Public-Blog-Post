@@ -10,7 +10,7 @@ dotenv.config();
 
 const prisma = new PrismaClient();
 
-import { sendPasswordResetEmail, sendResetSuccessEmail, sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/emails";
+import { sendPasswordResetEmail, sendResetSuccessEmail, sendVerificationEmail } from "../mailtrap/emails";
 
 const ZodSchema = zod.object({
     username: zod.string(),
@@ -22,8 +22,8 @@ const Zod2Schema = zod.object({
     password: zod.string(),
 });
 
-function generateTokenAndSetCookie(res: any, userId: any) {
-    const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
+function generateTokenAndSetCookie(res: any, userId: any,username: string) {
+    const token = jwt.sign({ userId,username }, process.env.JWT_SECRET, {
         expiresIn: "7d",
     });
     res.cookie("token", token, {
@@ -68,7 +68,7 @@ export const signup = (async (req: Request, res: Response) => {
     });
 
     // JWT
-    generateTokenAndSetCookie(res, user.id);
+    generateTokenAndSetCookie(res, user.id,user.username);
 
     // Send verification token to email
     await sendVerificationEmail(user.email, verificationToken);
@@ -83,10 +83,10 @@ export const signup = (async (req: Request, res: Response) => {
     });
 }) as express.RequestHandler;
 
-export function signout(req: Request, res: Response) {
+export const signout = (async(req: Request, res: Response) => {
     res.clearCookie("token");
     res.status(200).json({ success: true, message: "Logged out successfully!" });
-}
+})as express.RequestHandler
 
 export const signin = (async (req: Request, res: Response) => {
     const { email, password } = req.body;
@@ -110,7 +110,7 @@ export const signin = (async (req: Request, res: Response) => {
         }
 
         // Generate token and set it as a cookie
-        generateTokenAndSetCookie(res, user.id);
+        generateTokenAndSetCookie(res, user.id,user.username);
 
         // Update last login timestamp
         await prisma.user.update({
@@ -158,7 +158,7 @@ export const verifyEmail = (async (req: Request, res: Response) => {
             },
         });
 
-        await sendWelcomeEmail(user.email, user.username);
+        // await sendWelcomeEmail(user.email, user.username);
 
         res.json({
             success: true,
@@ -227,13 +227,22 @@ export const resetPassword = (async (req: Request, res: Response) => {
     }
 }) as express.RequestHandler;
 
-export const checkAuth = (async (req: any, res: Response) => {
-    try {
-        const user = await prisma.user.findUnique({ where: { id: req.userId } });
-        if (!user) {
-            return res.status(400).json({ success: false, message: "User not found!" });
-        }
-    } catch (error) {
-        console.log("Error at the checkAuth endpoint", error);
-    }
-}) as express.RequestHandler;
+ export const checkAuth = (async (req: any, res: Response) => {  
+    try {  
+        const user = await prisma.user.findUnique({ where: { id: req.userId } });  
+        if (!user) {  
+            return res.status(400).json({ success: false, message: "User not found!" });  
+        }  
+        res.json({  
+            user: {  
+                id: user.id,  
+                email: user.email,  
+                username: user.username,  
+                isVerified: user.isVerified,  
+            },  
+        });  
+    } catch (error) {  
+        console.log("Error at the checkAuth endpoint", error);  
+        res.status(500).json({ success: false, message: "Internal server error" });  
+    }  
+})as express.RequestHandler; 

@@ -1,0 +1,26 @@
+/* src/CustomTextarea.css */
+/* Custom scrollbar styles */
+.anothercustom-textarea {
+    padding-right: 0px; /* Adds padding on the right for better appearance */
+}
+
+/* Scrollbar styles */
+.anothercustom-textarea::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+}
+
+.anothercustom-textarea::-webkit-scrollbar-thumb {
+    background-color: #888; /* Scrollbar thumb color */
+    border-radius: 1rem; /* Equivalent to Tailwind's rounded-2xl (16px) */
+    margin: 2px 0; /* Shorten the thumb by 4px (2px top + 2px bottom) */
+}
+
+.anothercustom-textarea::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Darker on hover */
+}
+
+.anothercustom-textarea::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Track color */
+    border-radius: 1rem; /* Ensure the track also has rounded edges */
+    margin: 5px 0; /* Shorten the track by 4px (2px top + 2px bottom) */
+}

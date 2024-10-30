@@ -24,10 +24,10 @@ const SignInPage = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1 }}
-      className="max-w-md w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden"
+      className="max-w-md w-full mt-28 h-full sm:ml-[35%] sm:mt-[10%]  bg-black bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden"
     >
       <div className="p-8">
-        <h2 className="text-3xl font-bold font-mono mb-6 text-center text-[#99d6ea]">
+        <h2 className="text-3xl font-bold font-mono mb-6 text-center text-gray-400">
           Welcome Back
         </h2>
         <form onSubmit={handleSubmit}>
@@ -48,7 +48,7 @@ const SignInPage = () => {
           <div className="flex items-center mb-6">
             <Link
               to={"/forgot-password"}
-              className="text-sm text-[#99d6ea] hover:underline"
+              className="text-sm text-white hover:underline"
             >
               Forgot Password?
             </Link>
@@ -58,7 +58,7 @@ const SignInPage = () => {
             type="submit"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="mt-2 w-full py-3 px-4 text-[#1b1d36] rounded-lg bg-[#99d6ea] hover:bg-[#77d3f1] font-bold font-mono text-xl"
+            className="mt-2 w-full py-3 px-4 text-[#1b1d36] rounded-lg bg-gray-400 hover:bg-gray-600 font-bold font-mono text-xl"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -69,10 +69,10 @@ const SignInPage = () => {
           </motion.button>
         </form>
       </div>
-      <div className="px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center">
+      <div className="px-8 py-4 bg-gray-800 bg-opacity-50 flex justify-center">
         <p className="text-sm text-gray-400">
           Don't have an account?{"  "}
-          <Link to={"/signup"} className="text-[#99d6ea] hover:underline">
+          <Link to={"/signup"} className="text-white hover:underline">
             Sign Up
           </Link>
         </p>
