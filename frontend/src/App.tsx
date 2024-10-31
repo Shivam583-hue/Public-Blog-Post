@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";  
-import { useEffect } from "react";  
+import { useEffect, useState } from "react";  
 import { Toaster } from "react-hot-toast";  
 import { useAuthStore } from "./Store/authStore";  
 
@@ -34,12 +34,15 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
 
 const RedirectAuthenticatedUser = ({ children }: { children: JSX.Element }) => {  
   const { isAuthenticated, user } = useAuthStore();  
+  const [shouldRedirect, setShouldRedirect] = useState(false);
 
-  console.log("RedirectAuthenticatedUser - isAuthenticated:", isAuthenticated);
-  console.log("RedirectAuthenticatedUser - user:", user);
+  useEffect(() => {
+    if (isAuthenticated && user && user.isVerified) {
+      setShouldRedirect(true);
+    }
+  }, [isAuthenticated, user]);
 
-  if (isAuthenticated && user && user.isVerified) {  
-    console.log("Redirecting to home...");
+  if (shouldRedirect) {
     return <Navigate to='/' replace />;  
   }  
 

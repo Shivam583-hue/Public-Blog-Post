@@ -23,7 +23,7 @@ interface AuthState {
     isLoading: boolean;
     isCheckingAuth: boolean;
     signup: (email: string, password: string, username: string) => Promise<void>;
-    signin: (email: string, password: string) => Promise<void>;
+    signin: (email: string, password: string) => Promise<boolean>;
     verifyEmail: (code: string) => Promise<void>;
     checkAuth: () => Promise<void>;
     signout: () => Promise<void>;
@@ -75,44 +75,39 @@ export const useAuthStore = create<AuthState>((set) => ({
         set({ isLoading: true, error: null });
         try {
             const response = await axios.post('/api/auth/signin', { email, password });
-            console.log('Signin response:', response.data);
-
-            console.log('Response check:', {
-                hasSuccess: response.data.success,
-                hasUser: !!response.data.user,
-                hasToken: !!response.data.token,
-                userData: response.data.user
-            });
-
+            
             if (response.data.success && response.data.user) {
-                const newState = {
-                    user: response.data.user,
-                    isAuthenticated: true,
+                set((state) => ({ 
+                    ...state,
+                    user: response.data.user, 
+                    isAuthenticated: true, 
                     isLoading: false,
-                    error: null
-                };
-
-                console.log('Setting new state:', newState);
-
-                set(newState);
-
-                const currentState = useAuthStore.getState();
-                console.log('Current store state:', currentState);
+                    error: null 
+                }));
 
                 if (response.data.token) {
                     localStorage.setItem('token', response.data.token);
                     axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
                 }
+
+                return true;
             }
-        } catch (error: unknown) {
-            console.error('Signin error:', error);
+            
+            set({ 
+                error: "Invalid response from server", 
+                isAuthenticated: false, 
+                isLoading: false,
+                user: null
+            });
+            return false;
+        } catch (error) {
             set({ 
                 error: "Error signing in", 
                 isLoading: false,
                 isAuthenticated: false,
                 user: null
             });
-            throw error;
+            return false;
         }
     },
     verifyEmail: async (code: string) => {
