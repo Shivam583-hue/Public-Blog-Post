@@ -47,9 +47,10 @@ const RedirectAuthenticatedUser = ({ children }: { children: JSX.Element }) => {
 };  
 
 function App() {  
-  const { checkAuth, isAuthenticated, user } = useAuthStore();  
+  const { checkAuth, isAuthenticated, user, setupAxiosInterceptors } = useAuthStore();  
 
   useEffect(() => {  
+    setupAxiosInterceptors();  
     checkAuth();  
   }, []);  
 

@@ -31,6 +31,7 @@ interface AuthState {
     resetPassword: (token: string, password: string) => Promise<void>;
     isVerified: boolean;
     message: string | null;
+    setupAxiosInterceptors: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -74,25 +75,29 @@ export const useAuthStore = create<AuthState>((set) => ({
         try {
             const response = await axios.post('/api/auth/signin', { email, password });
             
-            if (response.data.success && response.data.user) {
-                // First update the state BEFORE anything else
-                set((state) => ({
-                    ...state,
+            if (response.data.success && response.data.user && response.data.token) {
+                const token = response.data.token;
+                
+                // Set token in axios defaults FIRST
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                localStorage.setItem('token', token);
+                
+                // Then update state
+                set({
                     user: response.data.user,
                     isAuthenticated: true,
                     isLoading: false,
                     error: null
-                }));
+                });
 
-                // Then handle the token
-                if (response.data.token) {
-                    localStorage.setItem('token', response.data.token);
-                    axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-                }
-
-                // Log the actual state after update
-                const currentState = useAuthStore.getState();
-                console.log('Actual state after update:', currentState);
+                // Create a new axios instance with the token
+                axios.create({
+                    baseURL: 'https://public-blog-post-server-shivams-projects-0d7a6fe1.vercel.app',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    withCredentials: true
+                });
             }
         } catch (error) {
             set({ user: null, isAuthenticated: false, error: "Login failed", isLoading: false });
@@ -167,5 +172,20 @@ export const useAuthStore = create<AuthState>((set) => ({
             });
             throw error;
         }
+    },
+
+    setupAxiosInterceptors: () => {
+        axios.interceptors.request.use(
+            (config) => {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    config.headers['Authorization'] = `Bearer ${token}`;
+                }
+                return config;
+            },
+            (error) => {
+                return Promise.reject(error);
+            }
+        );
     }
 }));
