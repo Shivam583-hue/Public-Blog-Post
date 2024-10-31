@@ -16,7 +16,7 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
     origin: [
-        'https://public-blog-post-app.vercel.app',
+        'https://public-blog-post.vercel.app',
         process.env.FRONTENDURL // for local development
     ],
     credentials: true,
