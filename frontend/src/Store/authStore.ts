@@ -71,56 +71,31 @@ export const useAuthStore = create<AuthState>((set) => ({
     },
 
     signin: async (email: string, password: string) => {
-        set({ isLoading: true, error: null });
         try {
             const response = await axios.post('/api/auth/signin', { email, password });
-            console.log('Signin response:', response.data);
-
-            if (response.data.success && response.data.user && response.data.token) {
-                const token = response.data.token;
-                
-                // Set token in multiple places
-                localStorage.setItem('token', token);
-                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-                axios.defaults.withCredentials = true;
-                
-                // Update state synchronously
-                const newState = {
+            
+            if (response.data.success && response.data.user) {
+                // First update the state BEFORE anything else
+                set((state) => ({
+                    ...state,
                     user: response.data.user,
                     isAuthenticated: true,
                     isLoading: false,
                     error: null
-                };
-                
-                set(newState);
-                
-                // Verify state update
+                }));
+
+                // Then handle the token
+                if (response.data.token) {
+                    localStorage.setItem('token', response.data.token);
+                    axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+                }
+
+                // Log the actual state after update
                 const currentState = useAuthStore.getState();
-                console.log('Current store state after update:', currentState);
-            } else {
-                set({ 
-                    error: "Invalid response from server", 
-                    isAuthenticated: false, 
-                    isLoading: false,
-                    user: null
-                });
+                console.log('Actual state after update:', currentState);
             }
-        } catch (error: unknown) {
-            if (axios.isAxiosError(error)) {
-                console.error('Axios Error:', error.response);
-                set({ 
-                    error: error.response?.data?.message || "Error signing in", 
-                    isLoading: false,
-                    isAuthenticated: false 
-                });
-            } else {
-                console.error('Unknown Error:', error);
-                set({ 
-                    error: "An unknown error occurred", 
-                    isLoading: false,
-                    isAuthenticated: false 
-                });
-            }
+        } catch (error) {
+            set({ user: null, isAuthenticated: false, error: "Login failed", isLoading: false });
             throw error;
         }
     },
