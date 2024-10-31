@@ -81,11 +81,18 @@ export const useAuthStore = create<AuthState>((set) => ({
                     isLoading: false,
                     error: null 
                 });
+                
+                console.log('Auth state updated after signin:', {
+                    user: response.data.user,
+                    isAuthenticated: true
+                });
+                
             } else {
                 set({ 
                     error: "Invalid response from server", 
                     isAuthenticated: false, 
-                    isLoading: false 
+                    isLoading: false,
+                    user: null
                 });
             }
         } catch (error: unknown) {
