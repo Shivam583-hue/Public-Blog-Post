@@ -72,17 +72,20 @@ export const useAuthStore = create<AuthState>((set) => ({
     },
 
     signin: async (email: string, password: string) => {
+        set({ isLoading: true, error: null });
         try {
+            console.log('Attempting signin...');
             const response = await axios.post('/api/auth/signin', { email, password });
-            
-            if (response.data.success && response.data.user && response.data.token) {
-                const token = response.data.token;
-                
-                // Set token in axios defaults FIRST
-                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-                localStorage.setItem('token', token);
-                
-                // Then update state
+            console.log('Signin response:', response.data);
+
+            if (response.data.success && response.data.user) {
+                // Handle token
+                if (response.data.token) {
+                    localStorage.setItem('token', response.data.token);
+                    axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+                }
+
+                // Update state
                 set({
                     user: response.data.user,
                     isAuthenticated: true,
@@ -90,17 +93,23 @@ export const useAuthStore = create<AuthState>((set) => ({
                     error: null
                 });
 
-                // Create a new axios instance with the token
-                axios.create({
-                    baseURL: 'https://public-blog-post-server-shivams-projects-0d7a6fe1.vercel.app',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                    withCredentials: true
+                console.log('Signin successful, state updated');
+            } else {
+                set({
+                    user: null,
+                    isAuthenticated: false,
+                    isLoading: false,
+                    error: 'Invalid response from server'
                 });
             }
-        } catch (error) {
-            set({ user: null, isAuthenticated: false, error: "Login failed", isLoading: false });
+        } catch (error: any) {
+            console.error('Signin error:', error);
+            set({
+                user: null,
+                isAuthenticated: false,
+                isLoading: false,
+                error: error?.response?.data?.message || 'Error during signin'
+            });
             throw error;
         }
     },
