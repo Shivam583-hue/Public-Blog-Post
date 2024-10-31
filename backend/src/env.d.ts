@@ -5,5 +5,6 @@ declare namespace NodeJS {
       MAILTRAP_TOKEN : string;
       MAILTRAP_ENDPOINT : string;
       API_KEY: string;
+      FRONTENDURL : string;
     }
   }

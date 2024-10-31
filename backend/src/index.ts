@@ -14,24 +14,18 @@ const app = express();
 
 app.use(express.json())
 app.use(cookieParser())
-app.use('*', (req, res) => {
-    console.log('404 route hit:', req.originalUrl);
-    res.status(404).json({
-      message: 'Route not found',
-      path: req.originalUrl,
-      method: req.method
-    });
-  });
 app.use(cors({
     origin: [
         'https://public-blog-post-app.vercel.app',
-        'process.env.FRONTENDURL' // for local development
+        process.env.FRONTENDURL // for local development
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
     exposedHeaders: ['set-cookie']
 }));
+
+
 
 app.use('/api/auth',router)
 app.use('/blog',blog_router)
@@ -644,6 +638,14 @@ app.get('/users/:userId/following', (async (req: Request, res: Response) => {
       res.status(500).json({ success: false, message: "Internal server error" });
   }
 }) as express.RequestHandler);
+app.use('*', (req, res) => {
+    console.log('404 route hit:', req.originalUrl);
+    res.status(404).json({
+      message: 'Route not found',
+      path: req.originalUrl,
+      method: req.method
+    });
+  });
 
 app.listen(3116,() => {
   console.log("Running on port 3116")
