@@ -4,6 +4,7 @@
   "main": "dist/index.js",
   "scripts": {
     "postinstall": "prisma generate",
+    "stage" : "tsc && git add .",
     "dev": "nodemon --watch src --exec \"tsc && node dist/index.js\"",
     "build": "tsc",
     "vercel-build": "npm install && prisma generate && tsc",

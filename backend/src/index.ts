@@ -32,7 +32,7 @@ app.use('/blog',blog_router)
 
 
 //normal shit
-app.get("/test",(req,res)=>{res.send("Server is running 13")})
+app.get("/test",(req,res)=>{res.send("Server is running 14")})
 
 //Getting the Preview Cards 
 app.get('/home', async (req, res) => {
