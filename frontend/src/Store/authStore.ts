@@ -74,6 +74,11 @@ export const useAuthStore = create<AuthState>((set) => ({
             if (response.data.success && response.data.user && response.data.token) {
                 axios.defaults.withCredentials = true;
                 
+                const token = response.data.token;
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                
+                localStorage.setItem('token', token);
+                
                 set({ 
                     user: response.data.user, 
                     isAuthenticated: true, 
