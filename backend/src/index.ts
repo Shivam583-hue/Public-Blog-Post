@@ -14,6 +14,14 @@ const app = express();
 
 app.use(express.json())
 app.use(cookieParser())
+app.use('*', (req, res) => {
+    console.log('404 route hit:', req.originalUrl);
+    res.status(404).json({
+      message: 'Route not found',
+      path: req.originalUrl,
+      method: req.method
+    });
+  });
 app.use(cors({
     origin: [
         'https://public-blog-post-app.vercel.app',
