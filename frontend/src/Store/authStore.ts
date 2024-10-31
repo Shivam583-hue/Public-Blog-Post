@@ -74,42 +74,44 @@ export const useAuthStore = create<AuthState>((set) => ({
     signin: async (email: string, password: string) => {
         set({ isLoading: true, error: null });
         try {
-            console.log('Attempting signin...');
             const response = await axios.post('/api/auth/signin', { email, password });
             console.log('Signin response:', response.data);
 
-            if (response.data.success && response.data.user) {
-                // Handle token
-                if (response.data.token) {
-                    localStorage.setItem('token', response.data.token);
-                    axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-                }
-
-                // Update state
-                set({
-                    user: response.data.user,
-                    isAuthenticated: true,
+            if (response.data.success && response.data.user && response.data.token) {
+                // Set token in localStorage and axios headers
+                const token = response.data.token;
+                localStorage.setItem('token', token);
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                
+                // Update state (keeping your original state update)
+                set({ 
+                    user: response.data.user, 
+                    isAuthenticated: true, 
                     isLoading: false,
-                    error: null
+                    error: null 
                 });
-
-                console.log('Signin successful, state updated');
             } else {
-                set({
-                    user: null,
-                    isAuthenticated: false,
+                set({ 
+                    error: "Invalid response from server", 
+                    isAuthenticated: false, 
                     isLoading: false,
-                    error: 'Invalid response from server'
+                    user: null
                 });
             }
-        } catch (error: any) {
-            console.error('Signin error:', error);
-            set({
-                user: null,
-                isAuthenticated: false,
-                isLoading: false,
-                error: error?.response?.data?.message || 'Error during signin'
-            });
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                set({ 
+                    error: error.response?.data?.message || "Error signing in", 
+                    isLoading: false,
+                    isAuthenticated: false 
+                });
+            } else {
+                set({ 
+                    error: "An unknown error occurred", 
+                    isLoading: false,
+                    isAuthenticated: false 
+                });
+            }
             throw error;
         }
     },
