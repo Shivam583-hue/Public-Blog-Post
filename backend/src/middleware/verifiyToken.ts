@@ -16,7 +16,13 @@ interface CustomRequest extends Request {
 }
 
 export const verifyToken = (async(req: CustomRequest, res: Response, next: NextFunction) => {  
-    const token = req.cookies.token;  
+    // Check both cookie and Authorization header
+    const cookieToken = req.cookies.token;
+    const authHeader = req.headers.authorization;
+    const bearerToken = authHeader?.split(' ')[1];
+    
+    const token = cookieToken || bearerToken;
+    
     if (!token) {  
         return res.status(401).json({ success: false, message: "Unauthorized - no token provided" });  
     }  
@@ -29,11 +35,11 @@ export const verifyToken = (async(req: CustomRequest, res: Response, next: NextF
         if (decoded?.userId && decoded?.username) {  
             req.userId = decoded.userId;  
             req.username = decoded.username; // Attach username to the request object
+            next(); // Proceed to the next middleware
         } else {  
             return res.status(401).json({ success: false, message: "Unauthorized - invalid token payload" });  
         }  
 
-        next(); // Proceed to the next middleware  
     } catch (error: any) {  
         // Differentiating between different types of errors  
         if (error.name === 'TokenExpiredError') {  

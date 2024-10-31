@@ -1,7 +1,12 @@
 import { create } from "zustand";
 import axios from "axios";
 
-axios.defaults.withCredentials = true;
+const token = localStorage.getItem('token');
+if (token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    axios.defaults.withCredentials = true;
+}
+
 axios.defaults.baseURL = 'https://public-blog-post-server-shivams-projects-0d7a6fe1.vercel.app';
 
 interface User {
@@ -72,24 +77,26 @@ export const useAuthStore = create<AuthState>((set) => ({
             console.log('Signin response:', response.data);
 
             if (response.data.success && response.data.user && response.data.token) {
+                const token = response.data.token;
+                
+                // Set token in multiple places
+                localStorage.setItem('token', token);
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
                 axios.defaults.withCredentials = true;
                 
-                const token = response.data.token;
-                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-                
-                localStorage.setItem('token', token);
-                
-                set({ 
-                    user: response.data.user, 
-                    isAuthenticated: true, 
-                    isLoading: false,
-                    error: null 
-                });
-                
-                console.log('Auth state updated:', {
+                // Update state synchronously
+                const newState = {
                     user: response.data.user,
-                    isAuthenticated: true
-                });
+                    isAuthenticated: true,
+                    isLoading: false,
+                    error: null
+                };
+                
+                set(newState);
+                
+                // Verify state update
+                const currentState = useAuthStore.getState();
+                console.log('Current store state after update:', currentState);
             } else {
                 set({ 
                     error: "Invalid response from server", 
