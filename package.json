@@ -1,40 +1,24 @@
 {
-  "name": "authenticationfromytvid",
+  "name": "your-project-name",
   "version": "1.0.0",
-  "main": "backend/dist/index.js",
+  "main": "index.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
-    "dev": "NODE_ENV=development nodemon backend/dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "set NODE_ENV=production node backend/dist/index.js",
+    "start": "node dist/index.js",
     "build": "tsc",
-    "postinstall": "bash ./postinstall.sh"
+    "postinstall": "prisma generate"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "@prisma/client": "^latest-version",
-    "@sendgrid/mail": "^8.1.4",
-    "@types/bcrypt": "^5.0.2",
-    "@types/express": "^5.0.0",
-    "bcrypt": "^5.1.1",
-    "bcryptjs": "^2.4.3",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.5",
-    "crypto": "^1.0.1",
-    "dotenv": "^16.4.5",
-    "express": "^4.21.1",
-    "jsonwebtoken": "^9.0.2",
-    "mailtrap": "^3.4.0",
-    "mongoose": "^8.7.2",
-    "prisma": "^latest-version",
-    "zod": "^3.23.8"
-  },
-  "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
-    "@types/cookie-parser": "^1.4.7",
-    "@types/cors": "^2.8.17",
-    "@types/jsonwebtoken": "^9.0.7"
+    "@prisma/client": "^5.x.x",
+    "express": "^4.x.x",
+    "cors": "^2.x.x",
+    "cookie-parser": "^1.x.x",
+    "typescript": "^5.x.x",
+    "@types/express": "^4.x.x",
+    "@types/cors": "^2.x.x",
+    "@types/cookie-parser": "^1.x.x",
+    "prisma": "^5.x.x"
   }
 }
