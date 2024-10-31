@@ -70,25 +70,39 @@ export const useAuthStore = create<AuthState>((set) => ({
         try {
             const response = await axios.post('/api/auth/signin', { email, password });
             console.log('Signin response:', response.data);
+            
+            console.log('Response check:', {
+                success: response.data.success,
+                hasUser: !!response.data.user,
+                hasToken: !!response.data.token,
+                user: response.data.user
+            });
 
-            if (response.data.success && response.data.user && response.data.token) {
-                localStorage.setItem('token', response.data.token);
-                axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-                set({ 
-                    user: response.data.user, 
-                    isAuthenticated: true, 
+            if (response.data.success) {
+                const newState = {
+                    user: response.data.user,
+                    isAuthenticated: true,
                     isLoading: false,
-                    error: null 
-                });
-                console.log('Token set in axios headers:', axios.defaults.headers.common['Authorization']);
-            } else {
-                set({ 
-                    error: "Invalid response from server", 
-                    isAuthenticated: false, 
-                    isLoading: false,
-                    user: null
-                });
+                    error: null
+                };
+                
+                set(newState);
+                
+                if (response.data.token) {
+                    localStorage.setItem('token', response.data.token);
+                    axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+                }
+
+                console.log('State after update:', newState);
+                return;
             }
+            
+            set({ 
+                error: "Invalid response from server", 
+                isAuthenticated: false, 
+                isLoading: false,
+                user: null
+            });
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 console.error('Axios Error:', error.response);
