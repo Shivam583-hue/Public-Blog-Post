@@ -6,15 +6,15 @@
     "dev": "NODE_ENV=development nodemon backend/dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "set NODE_ENV=production node backend/dist/index.js",
-    "build": "npm install && tsc -b backend && npm install --prefix frontend && npm run build --prefix frontend",
-    "postinstall": "prisma generate"
+    "build": "tsc",
+    "postinstall": "bash ./postinstall.sh"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@prisma/client": "^5.21.1",
+    "@prisma/client": "^latest-version",
     "@sendgrid/mail": "^8.1.4",
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.0",
@@ -28,7 +28,7 @@
     "jsonwebtoken": "^9.0.2",
     "mailtrap": "^3.4.0",
     "mongoose": "^8.7.2",
-    "prisma": "^5.21.1",
+    "prisma": "^latest-version",
     "zod": "^3.23.8"
   },
   "devDependencies": {
