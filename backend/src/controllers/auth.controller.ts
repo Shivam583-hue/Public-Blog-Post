@@ -188,7 +188,7 @@ export const forgotPassword = (async (req: Request, res: Response) => {
             },
         });
 
-        await sendPasswordResetEmail(user.email, `http://localhost:5173/reset-password/${resetToken}`);
+        await sendPasswordResetEmail(user.email, `https://public-blog-post-app.vercel.app/reset-password/${resetToken}`);
         res.status(200).json({ success: true, message: "Password reset link sent to your email" });
     } catch (e: any) {
         console.log("Error in forgot password endpoint", e);
