@@ -4,8 +4,8 @@
   "main": "index.js",
   "scripts": {
     "vercel-build": "npx prisma generate && npm run build",
-    "build": "tsc --project tsconfig.json",
-    "start": "node dist/index.js"
+    "build": "tsc --project backend/tsconfig.json",
+    "start": "nodemon --watch backend/src --exec \"tsc -b backend && node backend/dist/index.js\""
   },
   "dependencies": {
     "@prisma/client": "^5.x.x",
@@ -20,6 +20,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.x.x",
     "jsonwebtoken": "^9.0.2",
+    "nodemon": "^3.1.7",
     "prisma": "^5.x.x",
     "sendgrid": "^5.2.3",
     "typescript": "^5.x.x",

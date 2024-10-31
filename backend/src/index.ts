@@ -6,6 +6,8 @@ import blog_router from "./routes/post.route";
 import cookieParser from 'cookie-parser'
 import { verifyToken } from "./middleware/verifiyToken";
 const prisma = new PrismaClient();
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
 
@@ -15,7 +17,7 @@ app.use(cookieParser())
 app.use(cors({
     origin: [
         'https://public-blog-post-app.vercel.app',
-        'http://localhost:5173' // for local development
+        'process.env.FRONTENDURL' // for local development
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -26,6 +28,9 @@ app.use(cors({
 app.use('/api/auth',router)
 app.use('/blog',blog_router)
 
+
+//normal shit
+app.get("/",(req,res)=>{res.send("Server is running 13")})
 
 //Getting the Preview Cards 
 app.get('/home', async (req, res) => {
