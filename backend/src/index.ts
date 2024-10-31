@@ -13,11 +13,14 @@ const app = express();
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
-    origin: 'https://public-blog-post-app.vercel.app',
+    origin: [
+        'https://public-blog-post-app.vercel.app',
+        'http://localhost:5173' // for local development
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
-    exposedHeaders: ['Content-Range', 'X-Content-Range']
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+    exposedHeaders: ['set-cookie']
 }));
 
 app.use('/api/auth',router)
