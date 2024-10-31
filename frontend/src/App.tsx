@@ -19,14 +19,19 @@ import More from "./BlogPages/More";
 import { BlogDetail } from "./BlogPages/BlogDetail";
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {  
-  const { isAuthenticated, user } = useAuthStore();  
+  const { isAuthenticated, user, isLoading } = useAuthStore();  
+
+  // Handle loading state
+  if (isLoading) {
+      return <div>Loading...</div>; // Or a spinner component
+  }
 
   if (!isAuthenticated || !user) {  
-    return <Navigate to='/signin' replace />;  
+      return <Navigate to='/signin' replace />;  
   }  
 
   if (!user.isVerified) {  
-    return <Navigate to='/verify-email' replace />;  
+      return <Navigate to='/verify-email' replace />;  
   }  
 
   return children;  
@@ -34,20 +39,15 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
 
 const RedirectAuthenticatedUser = ({ children }: { children: JSX.Element }) => {  
   const { isAuthenticated, user } = useAuthStore();  
-  const [shouldRedirect, setShouldRedirect] = useState(false);
 
-  useEffect(() => {
-    if (isAuthenticated && user && user.isVerified) {
-      setShouldRedirect(true);
-    }
-  }, [isAuthenticated, user]);
-
-  if (shouldRedirect) {
-    return <Navigate to='/' replace />;  
+  // Directly return Navigate based on condition
+  if (isAuthenticated && user && user.isVerified) {
+      return <Navigate to='/' replace />;  
   }  
 
   return children;  
 };  
+
 
 function App() {  
   const { checkAuth, isAuthenticated, user, setupAxiosInterceptors } = useAuthStore();  

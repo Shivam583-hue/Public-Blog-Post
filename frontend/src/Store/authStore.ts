@@ -84,12 +84,13 @@ export const useAuthStore = create<AuthState>((set) => ({
                     isLoading: false,
                     error: null 
                 }));
-
+    
+                // Save token and set Authorization header
                 if (response.data.token) {
                     localStorage.setItem('token', response.data.token);
                     axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
                 }
-
+    
                 return true;
             }
             
@@ -100,9 +101,13 @@ export const useAuthStore = create<AuthState>((set) => ({
                 user: null
             });
             return false;
-        } catch (error) {
+        } catch (error: any) {
+            // Clear token and header if error occurs
+            localStorage.removeItem('token');
+            delete axios.defaults.headers.common['Authorization'];
+            
             set({ 
-                error: "Error signing in", 
+                error: error.response?.data?.message || "Error signing in", 
                 isLoading: false,
                 isAuthenticated: false,
                 user: null
@@ -110,6 +115,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             return false;
         }
     },
+    
     verifyEmail: async (code: string) => {
         set({ isLoading: true, error: null });
         try {
@@ -133,12 +139,13 @@ export const useAuthStore = create<AuthState>((set) => ({
                 set({ isAuthenticated: false, isCheckingAuth: false });
                 return;
             }
-
+    
+            // Set Authorization header with token
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             
             const response = await axios.get('/api/auth/check-auth');
             console.log('Check Auth response:', response.data);
-
+    
             if (response.data.user) {
                 set({ user: response.data.user, isAuthenticated: true, isCheckingAuth: false });
             } else {
@@ -146,11 +153,20 @@ export const useAuthStore = create<AuthState>((set) => ({
             }
         } catch (error: any) {
             console.error('Check Auth Error:', error);
+            
+            // Clear token if checkAuth fails
             localStorage.removeItem('token');
-            axios.defaults.headers.common['Authorization'] = '';
-            set({ error: null, isCheckingAuth: false, isAuthenticated: false, user: null });
+            delete axios.defaults.headers.common['Authorization'];
+    
+            set({ 
+                error: error.message || 'Authentication failed', 
+                isCheckingAuth: false, 
+                isAuthenticated: false, 
+                user: null 
+            });
         }
     },
+    
 
     forgotPassword: async (email: string) => {
         set({ isLoading: true, error: null, message: null });
