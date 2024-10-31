@@ -35,7 +35,7 @@ export const verifyToken = (async(req: CustomRequest, res: Response, next: NextF
         if (decoded?.userId && decoded?.username) {  
             req.userId = decoded.userId;  
             req.username = decoded.username; // Attach username to the request object
-            next(); // Proceed to the next middleware
+            return next(); // Proceed to the next middleware
         } else {  
             return res.status(401).json({ success: false, message: "Unauthorized - invalid token payload" });  
         }  

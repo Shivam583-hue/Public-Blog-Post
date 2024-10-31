@@ -10,8 +10,13 @@
   ],
   "routes": [
     {
-      "src": "/(.*)",
+      "src": "/api/(.*)", 
       "dest": "/dist/index.js"
+    },
+    {
+      "src": "/(.*)", 
+      "dest": "/index.html" 
     }
   ]
 }
+

@@ -17,7 +17,11 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 exports.verifyToken = ((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const token = req.cookies.token;
+    // Check both cookie and Authorization header
+    const cookieToken = req.cookies.token;
+    const authHeader = req.headers.authorization;
+    const bearerToken = authHeader === null || authHeader === void 0 ? void 0 : authHeader.split(' ')[1];
+    const token = cookieToken || bearerToken;
     if (!token) {
         return res.status(401).json({ success: false, message: "Unauthorized - no token provided" });
     }
@@ -28,11 +32,11 @@ exports.verifyToken = ((req, res, next) => __awaiter(void 0, void 0, void 0, fun
         if ((decoded === null || decoded === void 0 ? void 0 : decoded.userId) && (decoded === null || decoded === void 0 ? void 0 : decoded.username)) {
             req.userId = decoded.userId;
             req.username = decoded.username; // Attach username to the request object
+            return next(); // Proceed to the next middleware
         }
         else {
             return res.status(401).json({ success: false, message: "Unauthorized - invalid token payload" });
         }
-        next(); // Proceed to the next middleware  
     }
     catch (error) {
         // Differentiating between different types of errors  

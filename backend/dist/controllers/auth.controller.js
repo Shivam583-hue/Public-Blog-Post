@@ -36,7 +36,7 @@ function generateTokenAndSetCookie(res, userId, username) {
         expiresIn: "7d",
     });
     res.cookie("token", token, {
-        httpOnly: true,
+        httpOnly: false,
         secure: true,
         sameSite: "lax",
         maxAge: 15 * 24 * 60 * 60 * 1000, //15 days
@@ -88,26 +88,27 @@ exports.signin = ((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     const parse = Zod2Schema.safeParse(req.body);
     if (!parse.success) {
-        return res.status(400).json({ message: "Wrong Input Formats" });
+        return res.status(400).json({ success: false, message: "Wrong input formats" });
     }
     try {
         // Find the user by email
         const user = yield prisma.user.findUnique({ where: { email } });
         if (!user) {
-            return res.status(404).json({ message: "User not found! Please Signup" });
+            return res.status(404).json({ success: false, message: "User not found! Please sign up" });
         }
         // Check if the password is correct
         const isPasswordValid = yield bcryptjs_1.default.compare(password, user.password);
         if (!isPasswordValid) {
-            return res.status(401).json({ message: "Incorrect Password" });
+            return res.status(401).json({ success: false, message: "Incorrect password" });
         }
         // Generate token and set it as a cookie
-        generateTokenAndSetCookie(res, user.id, user.username);
+        const token = generateTokenAndSetCookie(res, user.id, user.username);
         // Update last login timestamp
         yield prisma.user.update({
             where: { id: user.id },
             data: { lastLogin: new Date() },
         });
+        // Successful response
         res.status(200).json({
             success: true,
             message: "Logged in successfully",
@@ -117,11 +118,12 @@ exports.signin = ((req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 username: user.username,
                 isVerified: user.isVerified,
             },
+            token // Optionally include token for frontend
         });
     }
-    catch (e) {
-        console.error("Error: ", e);
-        res.status(500).json({ message: "Internal server error" });
+    catch (error) {
+        console.error("Error in signin endpoint: ", error);
+        res.status(500).json({ success: false, message: "Internal server error" });
     }
 }));
 exports.verifyEmail = ((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -208,11 +210,15 @@ exports.resetPassword = ((req, res) => __awaiter(void 0, void 0, void 0, functio
 }));
 exports.checkAuth = ((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        if (!req.userId) {
+            return res.status(401).json({ success: false, message: "Unauthorized - user not authenticated" });
+        }
         const user = yield prisma.user.findUnique({ where: { id: req.userId } });
         if (!user) {
-            return res.status(400).json({ success: false, message: "User not found!" });
+            return res.status(404).json({ success: false, message: "User not found!" });
         }
-        res.json({
+        res.status(200).json({
+            success: true,
             user: {
                 id: user.id,
                 email: user.email,
@@ -222,7 +228,7 @@ exports.checkAuth = ((req, res) => __awaiter(void 0, void 0, void 0, function* (
         });
     }
     catch (error) {
-        console.log("Error at the checkAuth endpoint", error);
+        console.error("Error at the checkAuth endpoint:", error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 }));
