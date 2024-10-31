@@ -71,22 +71,23 @@ export const useAuthStore = create<AuthState>((set) => ({
             const response = await axios.post('/api/auth/signin', { email, password });
             console.log('Signin response:', response.data);
 
-            if (response.data.success && response.data.token && response.data.user) {
-                localStorage.setItem('token', response.data.token);
-                axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-                
+            if (response.data.success && response.data.user) {
                 set({ 
                     user: response.data.user, 
                     isAuthenticated: true, 
                     isLoading: false,
                     error: null 
                 });
+
+                if (response.data.token) {
+                    localStorage.setItem('token', response.data.token);
+                    axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+                }
                 
-                console.log('Auth state updated after signin:', {
+                console.log('Auth state updated:', {
                     user: response.data.user,
                     isAuthenticated: true
                 });
-                
             } else {
                 set({ 
                     error: "Invalid response from server", 
