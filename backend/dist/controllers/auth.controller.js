@@ -170,7 +170,7 @@ exports.forgotPassword = ((req, res) => __awaiter(void 0, void 0, void 0, functi
                 resetPasswordExpiresAt: resetTokenExpiresAt,
             },
         });
-        yield (0, emails_1.sendPasswordResetEmail)(user.email, `${process.env.FRONTENDURL}/${resetToken}`);
+        yield (0, emails_1.sendPasswordResetEmail)(user.email, `https://public-blog-post.vercel.app/${resetToken}`);
         res.status(200).json({ success: true, message: "Password reset link sent to your email" });
     }
     catch (e) {
