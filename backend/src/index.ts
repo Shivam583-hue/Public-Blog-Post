@@ -632,3 +632,4 @@ app.get('/users/:userId/following', (async (req: Request, res: Response) => {
 app.listen(3116,() => {
   console.log("Running on port 3116")
 })
+export default app;

@@ -6,7 +6,8 @@
     "dev": "NODE_ENV=development nodemon backend/dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "set NODE_ENV=production node backend/dist/index.js",
-    "build": "npm install && tsc -b backend && npm install --prefix frontend && npm run build --prefix frontend"
+    "build": "npm install && tsc -b backend && npm install --prefix frontend && npm run build --prefix frontend",
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
