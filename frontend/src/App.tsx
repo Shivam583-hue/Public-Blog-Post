@@ -47,9 +47,12 @@ function App() {
 
   useEffect(() => {  
     checkAuth();  
+  }, []);  
+
+  useEffect(() => {  
     console.log("Authenticated state in App: ", isAuthenticated);  
     console.log("User in App: ", user);  
-  }, [checkAuth, isAuthenticated, user]);  
+  }, [isAuthenticated, user]);  
 
   return (  
     <div className="bg-[#181818] flex min-h-screen">  

@@ -71,18 +71,38 @@ export const useAuthStore = create<AuthState>((set) => ({
             const response = await axios.post('/api/auth/signin', { email, password });
             console.log('Signin response:', response.data);
 
-            if (response.data.user) {
-                set({ user: response.data.user, isAuthenticated: true, isLoading: false });
+            if (response.data.success && response.data.token && response.data.user) {
+                localStorage.setItem('token', response.data.token);
+                axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+                
+                set({ 
+                    user: response.data.user, 
+                    isAuthenticated: true, 
+                    isLoading: false,
+                    error: null 
+                });
             } else {
-                set({ error: "User data missing in response", isAuthenticated: false, isLoading: false });
+                set({ 
+                    error: "Invalid response from server", 
+                    isAuthenticated: false, 
+                    isLoading: false 
+                });
             }
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 console.error('Axios Error:', error.response);
-                set({ error: error.response?.data?.message || "Error signing in", isLoading: false });
+                set({ 
+                    error: error.response?.data?.message || "Error signing in", 
+                    isLoading: false,
+                    isAuthenticated: false 
+                });
             } else {
                 console.error('Unknown Error:', error);
-                set({ error: "An unknown error occurred", isLoading: false });
+                set({ 
+                    error: "An unknown error occurred", 
+                    isLoading: false,
+                    isAuthenticated: false 
+                });
             }
             throw error;
         }
@@ -105,6 +125,14 @@ export const useAuthStore = create<AuthState>((set) => ({
     checkAuth: async () => {
         set({ isCheckingAuth: true, error: null });
         try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                set({ isAuthenticated: false, isCheckingAuth: false });
+                return;
+            }
+
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            
             const response = await axios.get('/api/auth/check-auth');
             console.log('Check Auth response:', response.data);
 
@@ -115,7 +143,9 @@ export const useAuthStore = create<AuthState>((set) => ({
             }
         } catch (error: any) {
             console.error('Check Auth Error:', error);
-            set({ error: null, isCheckingAuth: false, isAuthenticated: false });
+            localStorage.removeItem('token');
+            axios.defaults.headers.common['Authorization'] = '';
+            set({ error: null, isCheckingAuth: false, isAuthenticated: false, user: null });
         }
     },
 
