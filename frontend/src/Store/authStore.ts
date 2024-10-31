@@ -2,7 +2,7 @@ import { create } from "zustand";
 import axios from "axios";
 
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = 'https://public-blog-post-app-api.vercel.app';
+axios.defaults.baseURL = 'http://localhost:3116';
 
 interface User {
     id: number;
