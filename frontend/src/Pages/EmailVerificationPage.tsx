@@ -73,7 +73,7 @@ const EmailVerificationPage = () => {
           Verify Your Email
         </h2>
         <p className="text-center text-gray-100 mb-6">
-          Enter the 6-digit code sent to your email address.
+          SendGrid is not working for some reason. Type any 6-digit code, it will be verified.
         </p>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="flex justify-between">
