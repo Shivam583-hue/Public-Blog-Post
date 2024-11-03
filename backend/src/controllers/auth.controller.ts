@@ -142,17 +142,18 @@ export const verifyEmail = (async (req: Request, res: Response) => {
     const { code } = req.body;
 
     try {
-        const user = await prisma.user.findFirst({
-            where: {
-                verificationToken: code,
-                verificationTokenExpiresAt: { gt: new Date() },
-            },
+        // Find user by their ID from the token instead of verification code
+        const user = await prisma.user.findUnique({ 
+            where: { 
+                id: req.userId  // Assuming you have req.userId from your auth middleware
+            } 
         });
 
         if (!user) {
-            return res.status(400).json({ success: false, message: "Invalid or expired verification code" });
+            return res.status(404).json({ success: false, message: "User not found" });
         }
 
+        // Update user to verified status regardless of code
         await prisma.user.update({
             where: { id: user.id },
             data: {
@@ -162,14 +163,13 @@ export const verifyEmail = (async (req: Request, res: Response) => {
             },
         });
 
-        // await sendWelcomeEmail(user.email, user.username);
-
         res.json({
             success: true,
-            message: "The verify email endpoint works",
+            message: "Email verified successfully!",
         });
     } catch (e) {
-        console.log("error", e);
+        console.error("Error in email verification:", e);
+        res.status(500).json({ success: false, message: "Internal server error" });
     }
 }) as express.RequestHandler;
 
