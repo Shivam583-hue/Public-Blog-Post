@@ -77,20 +77,20 @@ export const useAuthStore = create<AuthState>((set) => ({
             const response = await axios.post('/api/auth/signin', { email, password });
             
             if (response.data.success && response.data.user) {
-                set((state) => ({ 
-                    ...state,
-                    user: response.data.user, 
-                    isAuthenticated: true, 
-                    isLoading: false,
-                    error: null 
-                }));
-    
-                // Save token and set Authorization header
+                // Save token first
                 if (response.data.token) {
                     localStorage.setItem('token', response.data.token);
                     axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
                 }
-    
+
+                // Then update state atomically
+                set({
+                    user: response.data.user,
+                    isAuthenticated: true,
+                    isLoading: false,
+                    error: null
+                });
+
                 return true;
             }
             
@@ -102,7 +102,6 @@ export const useAuthStore = create<AuthState>((set) => ({
             });
             return false;
         } catch (error: any) {
-            // Clear token and header if error occurs
             localStorage.removeItem('token');
             delete axios.defaults.headers.common['Authorization'];
             
