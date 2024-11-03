@@ -129,32 +129,49 @@ exports.signin = ((req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.verifyEmail = ((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { code } = req.body;
     try {
-        // Find user by their ID from the token instead of verification code
-        const user = yield prisma.user.findUnique({
+        // Find the most recently created unverified user
+        const user = yield prisma.user.findFirst({
             where: {
-                id: req.userId // Assuming you have req.userId from your auth middleware
+                isVerified: false
+            },
+            orderBy: {
+                createdAt: 'desc'
             }
         });
         if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
+            return res.status(404).json({
+                success: false,
+                message: "No unverified user found"
+            });
         }
         // Update user to verified status regardless of code
-        yield prisma.user.update({
+        const updatedUser = yield prisma.user.update({
             where: { id: user.id },
             data: {
                 isVerified: true,
                 verificationToken: null,
                 verificationTokenExpiresAt: null,
             },
+            select: {
+                id: true,
+                email: true,
+                username: true,
+                isVerified: true,
+                profilePic: true
+            }
         });
         res.json({
             success: true,
             message: "Email verified successfully!",
+            user: updatedUser
         });
     }
     catch (e) {
         console.error("Error in email verification:", e);
-        res.status(500).json({ success: false, message: "Internal server error" });
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
     }
 }));
 exports.forgotPassword = ((req, res) => __awaiter(void 0, void 0, void 0, function* () {

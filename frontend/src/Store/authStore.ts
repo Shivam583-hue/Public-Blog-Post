@@ -124,12 +124,30 @@ export const useAuthStore = create<AuthState>((set) => ({
         set({ isLoading: true, error: null });
         try {
             const response = await axios.post(`/api/auth/verify-email`, { code });
-            const user: User = response.data.user;
-            set({ user, isAuthenticated: true, isLoading: false });
+            
+            if (response.data.success) {
+                // Get the token from localStorage (assuming it was saved during signup/signin)
+                const token = localStorage.getItem('token');
+                if (token) {
+                    // Set the Authorization header for future requests
+                    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                }
+                
+                // Update the user state with the verified user data
+                set({ 
+                    user: response.data.user, 
+                    isAuthenticated: true, 
+                    isLoading: false,
+                    error: null
+                });
+                
+                return response.data; // Return the response data for the component to use
+            }
         } catch (error: any) {
+            const errorMessage = error.response?.data?.message || "Error verifying email";
             set({
-                error: error.response?.data?.message || "Error verifying email",
-                isLoading: false,
+                error: errorMessage,
+                isLoading: false
             });
             throw error;
         }

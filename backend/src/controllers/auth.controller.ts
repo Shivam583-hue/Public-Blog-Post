@@ -142,36 +142,53 @@ export const signin = (async (req: Request, res: Response) => {
 
 export const verifyEmail = (async (req: Request, res: Response) => {
     const { code } = req.body;
-
+    
     try {
-        // Find user by their ID from the token instead of verification code
-        const user = await prisma.user.findUnique({ 
-            where: { 
-                id: req.userId  // Assuming you have req.userId from your auth middleware
-            } 
+        // Find the most recently created unverified user
+        const user = await prisma.user.findFirst({
+            where: {
+                isVerified: false
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
         });
 
         if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
+            return res.status(404).json({ 
+                success: false, 
+                message: "No unverified user found" 
+            });
         }
 
         // Update user to verified status regardless of code
-        await prisma.user.update({
+        const updatedUser = await prisma.user.update({
             where: { id: user.id },
             data: {
                 isVerified: true,
                 verificationToken: null,
                 verificationTokenExpiresAt: null,
             },
+            select: {
+                id: true,
+                email: true,
+                username: true,
+                isVerified: true,
+                profilePic: true
+            }
         });
 
         res.json({
             success: true,
             message: "Email verified successfully!",
+            user: updatedUser
         });
     } catch (e) {
         console.error("Error in email verification:", e);
-        res.status(500).json({ success: false, message: "Internal server error" });
+        res.status(500).json({ 
+            success: false, 
+            message: "Internal server error" 
+        });
     }
 }) as express.RequestHandler;
 
