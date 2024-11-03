@@ -2,6 +2,15 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import express, { Request, Response, NextFunction } from "express";  
 import dotenv from 'dotenv';  
 
+declare global {
+    namespace Express {
+        interface Request {
+            userId?: number;
+            username?: string;
+        }
+    }
+}
+
 dotenv.config();  
 
 interface DecodedToken extends JwtPayload {

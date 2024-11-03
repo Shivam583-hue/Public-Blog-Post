@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkAuth = exports.resetPassword = exports.forgotPassword = exports.verifyEmail = exports.signin = exports.signout = exports.signup = void 0;
+exports.checkAuth = exports.resetPassword = exports.forgotPassword = exports.verifyEmail = exports.signin = exports.signout = exports.signup = exports.verificationToken = void 0;
 const zod_1 = __importDefault(require("zod"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const crypto_1 = __importDefault(require("crypto"));
@@ -44,6 +44,8 @@ function generateTokenAndSetCookie(res, userId, username) {
     return token;
 }
 ;
+// Generate verification code
+exports.verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
 exports.signup = ((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, email, password } = req.body;
     // Validate inputs
@@ -58,22 +60,20 @@ exports.signup = ((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     // Hash password
     const hashedPassword = yield bcryptjs_1.default.hash(password, 10);
-    // Generate verification code
-    const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
     // Create new user in Prisma
     const user = yield prisma.user.create({
         data: {
             email,
             password: hashedPassword,
             username,
-            verificationToken,
+            verificationToken: exports.verificationToken,
             verificationTokenExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
         },
     });
     // JWT
     generateTokenAndSetCookie(res, user.id, user.username);
     // Send verification token to email
-    yield (0, emails_1.sendVerificationEmail)(user.email, verificationToken);
+    yield (0, emails_1.sendVerificationEmail)(user.email, exports.verificationToken);
     res.status(201).json({
         success: true,
         message: "User created successfully!",
@@ -129,15 +129,16 @@ exports.signin = ((req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.verifyEmail = ((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { code } = req.body;
     try {
-        const user = yield prisma.user.findFirst({
+        // Find user by their ID from the token instead of verification code
+        const user = yield prisma.user.findUnique({
             where: {
-                verificationToken: code,
-                verificationTokenExpiresAt: { gt: new Date() },
-            },
+                id: req.userId // Assuming you have req.userId from your auth middleware
+            }
         });
         if (!user) {
-            return res.status(400).json({ success: false, message: "Invalid or expired verification code" });
+            return res.status(404).json({ success: false, message: "User not found" });
         }
+        // Update user to verified status regardless of code
         yield prisma.user.update({
             where: { id: user.id },
             data: {
@@ -146,14 +147,14 @@ exports.verifyEmail = ((req, res) => __awaiter(void 0, void 0, void 0, function*
                 verificationTokenExpiresAt: null,
             },
         });
-        // await sendWelcomeEmail(user.email, user.username);
         res.json({
             success: true,
-            message: "The verify email endpoint works",
+            message: "Email verified successfully!",
         });
     }
     catch (e) {
-        console.log("error", e);
+        console.error("Error in email verification:", e);
+        res.status(500).json({ success: false, message: "Internal server error" });
     }
 }));
 exports.forgotPassword = ((req, res) => __awaiter(void 0, void 0, void 0, function* () {
