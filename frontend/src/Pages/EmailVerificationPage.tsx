@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuthStore } from "../Store/authStore";
-import {verificationToken} from "../../../backend/src/controllers/auth.controller.js"
 import toast from "react-hot-toast";
 
 const EmailVerificationPage = () => {
@@ -102,7 +101,6 @@ const EmailVerificationPage = () => {
           </motion.button>
         </form>
       </motion.div>
-      <div className="text-center text-gray-200 mt-4"> SendGrid is not working for some reason. Here is your verification code: {verificationToken}</div>
     </div>
   );
 };
