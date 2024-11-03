@@ -322,7 +322,7 @@ const ProfilePage = () => {
   const handleSave = async (newBio: string, newPfp: string) => {  
     if (!user) return;  
     try {  
-      const response = await axios.put(`/${user.id}`, {  
+      const response = await axios.put(`/api/user/${user.id}`, {  
         profilePic: newPfp,  
         bio: newBio,  
       });  

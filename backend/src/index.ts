@@ -394,7 +394,7 @@ app.get('/:userId',(async (req: Request, res: Response) => {
 
 
 //Lets authenticated user update their profile information
-app.put('/:userId',verifyToken,(async (req: Request, res: Response) => {
+app.put('/api/user/:userId',verifyToken,(async (req: Request, res: Response) => {
   const { profilePic, bio } = req.body;
 
   if (!profilePic && !bio) {

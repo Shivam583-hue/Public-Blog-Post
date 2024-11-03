@@ -356,7 +356,7 @@ app.get('/:userId', ((req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 })));
 //Lets authenticated user update their profile information
-app.put('/:userId', verifiyToken_1.verifyToken, ((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.put('/api/user/:userId', verifiyToken_1.verifyToken, ((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { profilePic, bio } = req.body;
     if (!profilePic && !bio) {
         return res.status(400).json({ success: false, message: "Nothing to update" });
