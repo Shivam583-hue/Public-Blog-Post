@@ -17,12 +17,14 @@ app.use(cookieParser())
 app.use(cors({
     origin: [
         'https://public-blog-post.vercel.app',
-        process.env.FRONTENDURL // for local development
+        process.env.FRONTENDURL
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
-    exposedHeaders: ['set-cookie']
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'Origin', 'Accept'],
+    exposedHeaders: ['set-cookie'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204
 }));
 
 

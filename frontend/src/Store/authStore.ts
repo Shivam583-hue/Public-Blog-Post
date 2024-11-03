@@ -1,6 +1,11 @@
 import { create } from "zustand";
 import axios from "axios";
 
+axios.defaults.baseURL = 'https://public-blog-post-server-shivams-projects-0d7a6fe1.vercel.app';
+axios.defaults.withCredentials = true;
+axios.defaults.headers.common['Accept'] = 'application/json';
+axios.defaults.headers.common['Origin'] = 'https://public-blog-post.vercel.app';
+
 const token = localStorage.getItem('token');
 if (token) {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
