@@ -35,6 +35,9 @@ function generateTokenAndSetCookie(res: any, userId: any,username: string) {
     return token;
 };
 
+// Generate verification code
+export const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+
 export const signup = (async (req: Request, res: Response) => {
     const { username, email, password } = req.body;
 
@@ -53,8 +56,6 @@ export const signup = (async (req: Request, res: Response) => {
     // Hash password
     const hashedPassword = await bcryptjs.hash(password, 10);
 
-    // Generate verification code
-    const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
 
     // Create new user in Prisma
     const user = await prisma.user.create({
