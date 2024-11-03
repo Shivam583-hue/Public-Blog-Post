@@ -15,7 +15,7 @@ router.post('/signin', signin)
 
 router.post('/signout',signout)
 
-router.post("/verify-email",verifyToken,verifyEmail);
+router.post("/verify-email",verifyEmail);
 
 router.post("/forgot-password",forgotPassword)
 

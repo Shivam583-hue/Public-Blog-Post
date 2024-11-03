@@ -161,7 +161,7 @@ export const verifyEmail = (async (req: Request, res: Response) => {
             });
         }
 
-        // Update user to verified status regardless of code
+        // Update user to verified status
         const updatedUser = await prisma.user.update({
             where: { id: user.id },
             data: {
@@ -178,10 +178,18 @@ export const verifyEmail = (async (req: Request, res: Response) => {
             }
         });
 
+        // Generate a new token for the verified user
+        const token = jwt.sign(
+            { userId: user.id, username: user.username },
+            process.env.JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+
         res.json({
             success: true,
             message: "Email verified successfully!",
-            user: updatedUser
+            user: updatedUser,
+            token
         });
     } catch (e) {
         console.error("Error in email verification:", e);

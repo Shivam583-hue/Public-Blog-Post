@@ -144,7 +144,7 @@ exports.verifyEmail = ((req, res) => __awaiter(void 0, void 0, void 0, function*
                 message: "No unverified user found"
             });
         }
-        // Update user to verified status regardless of code
+        // Update user to verified status
         const updatedUser = yield prisma.user.update({
             where: { id: user.id },
             data: {
@@ -160,10 +160,13 @@ exports.verifyEmail = ((req, res) => __awaiter(void 0, void 0, void 0, function*
                 profilePic: true
             }
         });
+        // Generate a new token for the verified user
+        const token = jsonwebtoken_1.default.sign({ userId: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '24h' });
         res.json({
             success: true,
             message: "Email verified successfully!",
-            user: updatedUser
+            user: updatedUser,
+            token
         });
     }
     catch (e) {
