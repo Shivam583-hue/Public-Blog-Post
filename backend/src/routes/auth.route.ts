@@ -11,11 +11,11 @@ router.get('/check-auth',verifyToken, checkAuth)
 
 router.post('/signup',signup)
 
-router.post('/signin',signin)
+router.post('/signin', signin)
 
 router.post('/signout',signout)
 
-router.post("/verify-email",verifyEmail);
+router.post("/verify-email",verifyToken,verifyEmail);
 
 router.post("/forgot-password",forgotPassword)
 
