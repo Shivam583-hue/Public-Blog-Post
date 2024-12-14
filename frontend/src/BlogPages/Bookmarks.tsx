@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import React,{ useState, useEffect,  } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuthStore } from "../Store/authStore";
 import { useNavigate } from "react-router-dom";
@@ -21,7 +21,7 @@ interface Category {
 }
 
 interface BlogPost {
-  blog_id: number;  
+  blog_id: number;
   title: string;
   content: string;
   description: string;
@@ -39,9 +39,6 @@ interface BlogCardProps {
   blog: BlogPost;
   onLikeUpdate?: (blogId: number, liked: boolean) => void;
 }
-
-
-
 
 const BlogCard = React.memo(({ blog, onLikeUpdate }: BlogCardProps) => {
   const navigate = useNavigate();
@@ -64,9 +61,12 @@ const BlogCard = React.memo(({ blog, onLikeUpdate }: BlogCardProps) => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post<APIResponse<void>>(`/blog/${blog.blog_id}/like`, {
-        userId: user.id,
-      });
+      const response = await axios.post<APIResponse<void>>(
+        `/blog/${blog.blog_id}/like`,
+        {
+          userId: user.id,
+        },
+      );
 
       if (response.data.success) {
         setIsLiked(true);
@@ -83,16 +83,17 @@ const BlogCard = React.memo(({ blog, onLikeUpdate }: BlogCardProps) => {
     }
   };
 
-  
-
   const handleRemoveLike = async () => {
     if (isLoading) return;
     setIsLoading(true);
 
     try {
-      const response = await axios.delete<APIResponse<void>>(`/blog/${blog.blog_id}/removeLike`, {
-        data: { userId: user.id },
-      });
+      const response = await axios.delete<APIResponse<void>>(
+        `/blog/${blog.blog_id}/removeLike`,
+        {
+          data: { userId: user.id },
+        },
+      );
 
       if (response.data.success) {
         setIsLiked(false);
@@ -109,14 +110,14 @@ const BlogCard = React.memo(({ blog, onLikeUpdate }: BlogCardProps) => {
     }
   };
 
-  const handleBookmark = async() => {
+  const handleBookmark = async () => {
     try {
-      const response = await axios.post(`/blog/:blog_id/bookmark`,{
+      const response = await axios.post(`/blog/:blog_id/bookmark`, {
         userId: user.id,
         blogId: blog.blog_id,
-      })
+      });
       if (response.data.success) {
-        setIsMarked(true)
+        setIsMarked(true);
       } else {
         throw new Error(response.data.message || "Failed to bookmark blog");
       }
@@ -124,7 +125,7 @@ const BlogCard = React.memo(({ blog, onLikeUpdate }: BlogCardProps) => {
       console.error("Error bookmark blog:", error);
       showErrorToast("Unable to bookmark the blog. Please try again later.");
     }
-  }
+  };
 
   const showErrorToast = (message: string) => {
     alert(message);
@@ -172,13 +173,14 @@ const BlogCard = React.memo(({ blog, onLikeUpdate }: BlogCardProps) => {
           >
             Read More
           </motion.button>
-            {isMarked ? (<motion.button
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => setIsMarked(!isMarked)}
-            className="flex-shrink-0"
-            aria-label={isMarked ? "Remove bookmark" : "Bookmark this post"}
-          >
+          {isMarked ? (
+            <motion.button
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setIsMarked(!isMarked)}
+              className="flex-shrink-0"
+              aria-label={isMarked ? "Remove bookmark" : "Bookmark this post"}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 height="24px"
@@ -188,15 +190,17 @@ const BlogCard = React.memo(({ blog, onLikeUpdate }: BlogCardProps) => {
                 aria-hidden="true"
               >
                 <path d="M200-120v-640q0-33 23.5-56.5T280-840h400q33 0 56.5 23.5T760-760v640L480-240 200-120Z" />
-              </svg></motion.button>
-            ) : (
-              <motion.button
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleBookmark}
-            className="flex-shrink-0"
-            aria-label={isMarked ? "Remove bookmark" : "Bookmark this post"}
-            ><svg
+              </svg>
+            </motion.button>
+          ) : (
+            <motion.button
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleBookmark}
+              className="flex-shrink-0"
+              aria-label={isMarked ? "Remove bookmark" : "Bookmark this post"}
+            >
+              <svg
                 xmlns="http://www.w3.org/2000/svg"
                 height="24px"
                 viewBox="0 -960 960 960"
@@ -205,8 +209,9 @@ const BlogCard = React.memo(({ blog, onLikeUpdate }: BlogCardProps) => {
                 aria-hidden="true"
               >
                 <path d="M200-120v-640q0-33 23.5-56.5T280-840h400q33 0 56.5 23.5T760-760v640L480-240 200-120Zm80-122 200-86 200 86v-518H280v518Zm0-518h400-400Z" />
-              </svg></motion.button>
-            )}
+              </svg>
+            </motion.button>
+          )}
           <div className="flex items-center space-x-1">
             <motion.button
               whileHover={{ scale: 1.04 }}
@@ -248,40 +253,33 @@ const BlogCard = React.memo(({ blog, onLikeUpdate }: BlogCardProps) => {
   );
 });
 
-
-
 const Bookmarks = () => {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const { user } = useAuthStore();
 
-  useEffect(()=>{
-    const fetchBookmarksBlogs = async() => {
+  useEffect(() => {
+    const fetchBookmarksBlogs = async () => {
       if (!user) return;
-      const response = await axios.get(`/${user.id}/bookmarks`)
+      const response = await axios.get(`/${user.id}/bookmarks`);
       setBlogs(response.data.data || []);
-    }
-    fetchBookmarksBlogs()
-  },[])
+    };
+    fetchBookmarksBlogs();
+  }, []);
 
   return (
     <div className="ml-9">
       <h1 className="sm:text-6xl text-4xl font-serif p-4 font-bold bg-gradient-to-tr from-gray-800 via-gray-400 to-purple-800 bg-clip-text text-transparent shadow-lg">
-            Your Bookmarks
+        Your Bookmarks
       </h1>
       <div className="flex flex-col items-center space-y-6 max-w-4xl mx-auto">
-          {blogs.length === 0 ? (
-            <div className="text-gray-400 text-lg">No blogs found</div>
-          ) : (
-            blogs.map((blog) => (
-              <BlogCard
-                key={blog.blog_id}
-                blog={blog}
-              />
-            ))
-          )}
+        {blogs.length === 0 ? (
+          <div className="text-gray-400 text-lg">No blogs found</div>
+        ) : (
+          blogs.map((blog) => <BlogCard key={blog.blog_id} blog={blog} />)
+        )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Bookmarks
+export default Bookmarks;
