@@ -65,7 +65,7 @@ const Sidebar = () => {
       </svg>
     </motion.button>
   ) : (
-    <div className="bg-black fixed w-[350px] shadow-4xl border-r-[1px] border-x-gray-400 min-h-screen">
+    <div className="bg-black w-[350px] shadow-4xl border-r-[1px] border-x-gray-400 min-h-screen">
       <div className="p-12">
         <div className="pl-[42px] flex">
           <img src={Logo2} className="w-12 h-12" />
